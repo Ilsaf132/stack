@@ -17,9 +17,6 @@ Error_t StackError(struct Stack_t* stk) {
     if(stk == NULL) { 
         return ERROR_ADDRESS;
     }
-    if (stk -> data == NULL) {
-        return ERROR_DATA;
-    }
     if (stk -> size > stk -> capacity) {
         return ERROR_OVERFLOW;
     }
@@ -34,9 +31,6 @@ Error_t StackError(struct Stack_t* stk) {
     }
     if (Hash((char*) stk + first_bite_stk, stk_bites) != stk -> hash_s.hash_stack) {
         return ERROR_HASH_STACK;
-    }
-    if (Hash((char*) stk -> data, sizeof(stackElem_t)*(stk -> capacity + 2)) != stk -> hash_s.hash_data) {
-        return ERROR_HASH_DATA;
     }
     return FOUND_OK;
 }
