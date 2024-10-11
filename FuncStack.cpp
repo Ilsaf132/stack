@@ -13,10 +13,10 @@ Error_t StackPush(struct Stack_t* stk, stackElem_t elem) {
 
     if (stk -> size == stk -> capacity) {
         StackCapacityRealloc(stk, stk -> capacity * 2);
-        memset(stk -> data + sizeof(stackElem_t)*((stk -> capacity)/2 + 1), StackNull_t, sizeof(stackElem_t)*(stk -> capacity)/2);   
+        memset(stk -> data + sizeof(stackElem_t)*((stk -> capacity)/2 + 1), StackNull_t, sizeof(stackElem_t)*(stk -> capacity)/2);
         stk -> data[stk -> capacity + 1] = canary_data_t;
 
-        printf("New capacity: %d\n", stk -> capacity); 
+        printf("New capacity: %d\n", stk -> capacity);
     } else if (stk -> size > stk -> capacity) {
         StackAssert(stk);
         return ERROR_OVERFLOW;
@@ -40,7 +40,7 @@ Error_t StackPop(struct Stack_t* stk, stackElem_t* elem) {
         return ERROR_ADDRESS;
     }
     StackAssert(stk);
-    
+
     if (stk -> size == 0) {
         printf("Trying to pop an element without capacity!\n");
         StackDump(stk);
@@ -51,7 +51,7 @@ Error_t StackPop(struct Stack_t* stk, stackElem_t* elem) {
 
         printf("New capacity: %d\n", stk -> capacity);
     }
-    
+
     --stk -> size;
     printf("size: %d\n", stk -> size);
 
@@ -73,7 +73,9 @@ Error_t StackCapacityRealloc(struct Stack_t* stk, size_t new_capacity) {
         return ERROR_ADDRESS;
     }
     stk -> capacity = new_capacity;
-    realloc(stk -> data, (stk -> capacity + 2) * sizeof(stackElem_t));
+    stk->data = (stackElem_t*) realloc(stk -> data, (stk -> capacity + 2) * sizeof(stackElem_t));
+
+    return FOUND_OK;
 }
 
 
@@ -93,7 +95,7 @@ Error_t StackCtor(struct Stack_t* stk ON_DEBUG(, const char* name, const char* f
     stk -> size = 0;
     stk -> capacity = start_t;
 
-    #ifdef DEBUG 
+    #ifdef DEBUG
         stk -> name = name;
         stk -> file = file;
         stk -> line = line;
@@ -101,7 +103,7 @@ Error_t StackCtor(struct Stack_t* stk ON_DEBUG(, const char* name, const char* f
     stk -> hash_s.hash_stack = Hash((char *) stk + first_bite_stk, stk_bites);
     stk -> hash_s.hash_data = Hash((char *) stk -> data, sizeof(stackElem_t)*(start_t+2));
 
-    
+
     StackAssert(stk);
     return FOUND_OK;
 }
@@ -115,4 +117,6 @@ Error_t StackDtor(struct Stack_t* stk) {
 
     free(stk -> data);
     free(stk);
+
+    return FOUND_OK;
 }
